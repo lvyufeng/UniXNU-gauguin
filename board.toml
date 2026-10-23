@@ -126,9 +126,15 @@ kernel_args = ["-v", "serial=3", "cpus=8"]
 
 [payload.adt]
 tool = "scripts/make-gauguin-adt.py"
-chip_id = "0"
+# The UEFI-visible window from the device DT: memory@80000000 is 0x3bb00000.
+dram_size = "0x3bb00000"
+# Software identity seed, not an Apple silicon ID: XNU publishes
+# IOPlatformUUID from it and gethostuuid() callers block without it.
+# Passed as --unique-chip-id; the driver does not forward it from this table.
+chip_id = "0x47554749"
 owned_memory_size = "0x10000000"
-cpu_regs = "0,0x100"
+# SM7125 core numbering in the compiled board DT: one Affinity1 value per core.
+cpu_regs = "0,0x100,0x200,0x300,0x400,0x500,0x600,0x700"
 psci_method = "smc"
 packed_data_ramdisk = true
 ipad_identity = false
