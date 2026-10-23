@@ -11,8 +11,12 @@ CONFIG_XNU_SOURCE_CORECRYPTO14=y
 CONFIG_XNU_SOURCE_PTHREAD=y
 CONFIG_XNU_ARM_DT_PLATFORM=y
 CONFIG_XNU_ARMCPU=y
-CONFIG_XNU_NATIVE_UFS=y
 CONFIG_XNU_NATIVE_AES=y
-CONFIG_XNU_NATIVE_RAM_BLOCK=y
 CONFIG_XNU_TRUST_CACHE_RUNTIME=y
 CONFIG_XNU_NATIVE_ARCH_TIMER=y
+
+# NativeAES, and every archive that gates on it (NativeRamBlock, NativeUfs),
+# needs the original kernelcache's crypto prelink closure: prng_random keeps the
+# stock implementation and comes from the prelinked component instead of the
+# source provider.
+CONFIG_XNU_CRYPTO_BOOTSTRAP="prelinked"
