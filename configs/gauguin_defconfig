@@ -20,3 +20,8 @@ CONFIG_XNU_NATIVE_ARCH_TIMER=y
 # stock implementation and comes from the prelinked component instead of the
 # source provider.
 CONFIG_XNU_CRYPTO_BOOTSTRAP="prelinked"
+
+# The base XNU patch set calls the original display lifecycle probe from
+# bsd_init. gauguin has no legacy display driver in the image yet, so the call
+# stays compiled out instead of leaving an undefined symbol at link time.
+CONFIG_XNU_NATIVE_LEGACY_DISPLAY=n

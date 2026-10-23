@@ -46,9 +46,9 @@ archives = [
 ]
 
 [firmware]
-config = "miatoll"
-dsc = "Platforms/Xiaomi/miatollPkg/miatoll.dsc"
-fd = "Build/miatollPkg/{target}_CLANGPDB/FV/SILICIUM_UEFI.fd"
+config = "gauguin"
+dsc = "Platforms/Xiaomi/gauguinPkg/gauguin.dsc"
+fd = "Build/gauguinPkg/{target}_CLANGPDB/FV/SILICIUM_UEFI.fd"
 packages = [
   "{uefi}",
   "{uefi}/Platforms/Xiaomi",
@@ -65,6 +65,10 @@ packages = [
 
 [firmware.defines]
 DEVICE_MODEL = "gauguin"
+ENABLE_SECUREBOOT = "0"
+MEMORY_PROTECTION = "TRUE"
+SHIP_MODE = "FALSE"
+BUILDID_STRING = "gauguin-research"
 
 [bootimg.image]
 base = 0x0
