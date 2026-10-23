@@ -13,13 +13,13 @@ kit = "gauguin"
 # The userland this device runs today is the iPhone X restore image, the same
 # target the ios-sweet port on this phone used.
 [ipsw]
-url = "https://updates.cdn-apple.com/2023FallFCS/fullrestores/042-79642/9A8E3A16-97B0-4A4B-9C6A-4D1E2A0F0B38/iPhone10,3_16.7.16_20H392_Restore.ipsw"
+url = "https://updates.cdn-apple.com/2025FallFCS/fullrestores/122-77006/1158E502-D76D-4226-AA06-ED5E30CD1111/iPhone10,3,iPhone10,6_16.7.16_20H392_Restore.ipsw"
 product = "iPhone10,3"
 version = "16.7.16"
 build = "20H392"
 device_class = "d22ap"
 chip_id = 0x8015
-board_id = 0x0b
+board_id = 0x0b   # 10H392 (iPhone10,6) shares board 0x0b; the identity is chosen by device_class
 fetch = ["KernelCache", "DeviceTree", "StaticTrustCache", "Cryptex1,SystemTrustCache"]
 
 # MEASURED on the phone (GPT entry "userdata", LUN 0, 4096-byte logical blocks):
@@ -43,6 +43,43 @@ archives = [
   "build-arm-driver.py NativeAES",
   "build-native-aes-bindings.py",
   "build-libpthread-kernel.py",
+]
+
+[kernel.prelink]
+tool = "kits/NativePrelink/emit_prelink.py"
+kernel = "build/xnu/ios-obj/DEVELOPMENT_ARM64_BCM2837/mach.development.bcm2837.unstripped.noctf"
+kernelcache_sha256 = "2ec297bac95bcba01046fd0148e97e7e5885c05a6c18827f39f534ba375c1221"
+slide = "-0x1000000"
+early_security_init = "com.apple.driver.AppleMobileFileIntegrity=0xfffffff0056fb000"
+roots = [
+"com.apple.AppleFSCompression.AppleFSCompressionTypeZlib",
+  "com.apple.driver.AppleARMPlatform",
+  "com.apple.driver.AppleARMWatchdogTimer",
+  "com.apple.driver.AppleAudioClockLibs",
+  "com.apple.driver.AppleEffaceableStorage",
+  "com.apple.driver.AppleIISController",
+  "com.apple.driver.AppleM2ScalerCSCDriver",
+  "com.apple.driver.AppleMobileFileIntegrity",
+  "com.apple.driver.ApplePMGR",
+  "com.apple.driver.IODARTFamily",
+  "com.apple.filesystems.apfs",
+  "com.apple.iokit.CoreAnalyticsFamily",
+  "com.apple.iokit.IOCECFamily",
+  "com.apple.iokit.IOCryptoAcceleratorFamily",
+  "com.apple.iokit.IOGPUFamily",
+  "com.apple.iokit.IOHDCPFamily",
+  "com.apple.iokit.IOMobileGraphicsFamily",
+  "com.apple.iokit.IOReportFamily",
+  "com.apple.iokit.IOSlowAdaptiveClockingFamily",
+  "com.apple.iokit.IOStorageFamily",
+  "com.apple.iokit.IOSurface",
+  "com.apple.kec.corecrypto",
+  "com.apple.kext.AppleMatch",
+  "com.apple.kext.CoreTrust",
+  "com.apple.security.AppleImage4",
+  "com.apple.security.sandbox",
+  "com.apple.iokit.IOHIDFamily",
+  "com.apple.iokit.IOHIDEventDriver",
 ]
 
 [firmware]
