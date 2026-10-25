@@ -1,13 +1,17 @@
-# Board description of the Xiaomi Redmi Note 9 Pro 5G / Mi 10T Lite (gauguin,
-# SM7125 lagoon, Adreno 610), read by the unixnu build driver.
+# Board description of the Xiaomi Redmi Note 9 Pro 5G / Mi 10T Lite / Mi 10i
+# (gauguin, SM7225 Snapdragon 750G, Adreno 619), read by the unixnu build driver.
 #
 # Values marked MEASURED were read from the phone itself; the rest are copied
 # from the closest published port and must be confirmed on hardware.
 
 [board]
 name = "gauguin"
-soc = "SM7125"
-description = "Xiaomi Redmi Note 9 Pro 5G / Mi 10T Lite"
+# SM7225 (Snapdragon 750G) with an Adreno 619. The Redmi Note 9 Pro without 5G
+# is the SM7125 / 720G / Adreno 618; the two are routinely conflated because
+# gauguin's platform naming follows miatoll's, which is why this board file
+# starts from that package.
+soc = "SM7225"
+description = "Xiaomi Redmi Note 9 Pro 5G / Mi 10T Lite / Mi 10i"
 kit = "gauguin"
 
 # The userland this device runs today is the iPhone X restore image, the same
@@ -134,7 +138,10 @@ dram_size = "0x3bb00000"
 # Passed as --unique-chip-id; the driver does not forward it from this table.
 chip_id = "0x47554749"
 owned_memory_size = "0x10000000"
-# SM7125 core numbering in the compiled board DT: one Affinity1 value per core.
+# Core numbering in the compiled board DT: one Affinity1 value per core.
+# SM7225, not SM7125: the Note 9 Pro without 5G (curtana/excalibur) is the SM7125.
+# Both use 0x000..0x700 in Affinity1, but read these off this phone rather than
+# copies of a miatoll board file.
 cpu_regs = "0,0x100,0x200,0x300,0x400,0x500,0x600,0x700"
 psci_method = "smc"
 packed_data_ramdisk = true

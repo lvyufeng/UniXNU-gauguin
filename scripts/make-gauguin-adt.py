@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Generate the minimal gauguin (SM7125, lagoon) hardware Apple-format DT for the first boot.
+"""Generate the minimal gauguin (SM7225, Snapdragon 750G) hardware Apple-format DT for the first boot.
 
 The tree mirrors the proven QEMU entry fixture structure (same required
 nodes and properties the source XNU boot converged on) with pinned gauguin
-SM7125 values taken from the device's own /sys/firmware/fdt:
+SM7225 values taken from the device's own /sys/firmware/fdt:
 
   - GICv3 distributor 0x17A00000/0x10000, redistributor 0x17A60000/0x200000
     (arm-io child offsets under an APSS range at 0x17000000), stride 0x40000
@@ -84,7 +84,7 @@ def main():
                              'values follow the unchanged iPad7,1 tree, the panel geometry and button set are sheng\'s')
     parser.add_argument('--cpu-regs', default='0',
                         help='Comma-separated CPU MPIDR affinity values (the /cpus reg of each core); the first is the running boot CPU. '
-                             'SM7125 numbers its cores 0x000..0x700 in Affinity1 (sm7125.dtsi). More than one adds /psci')
+                             'The board DT numbers its cores 0x000..0x700 in Affinity1. More than one adds /psci')
     parser.add_argument('--psci-method', choices=['smc', 'hvc'], default='smc',
                         help='/psci method used by the secondary-CPU start (the board DT declares smc)')
     parser.add_argument('--packed-data-ramdisk', action='store_true', help='Hand off validated DBRDISK1 bytes to the native sparse block driver, without a dense memdev alias')

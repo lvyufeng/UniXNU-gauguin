@@ -1,27 +1,34 @@
 # UniXNU-gauguin
 
-Device repository for the Xiaomi Redmi Note 9 Pro 5G / Mi 10T Lite (`gauguin`,
-Qualcomm **SM7125 "lagoon"**, Adreno **610**), a device repository for
-[UniXNU](https://github.com/UniXNU/UniXNU).
+Device repository for the Xiaomi Redmi Note 9 Pro 5G / Mi 10T Lite / Mi 10i
+(`gauguin`, Qualcomm **SM7225** Snapdragon 750G, Adreno **619**), a device
+repository for [UniXNU](https://github.com/UniXNU/UniXNU).
 
 | | |
 | --- | --- |
-| SoC | SM7125 (lagoon) |
-| GPU | Adreno 610 |
+| SoC | SM7225 (Snapdragon 750G) |
+| GPU | Adreno 619 |
 | Target iOS | 16.7.16 (20H392), iPhone X `iPhone10,3` / `d22ap` |
 | Root | HFS+/APFS in the existing `userdata` partition |
-| UEFI | Mu-Silicium, derived from the `miatoll` package (same SM7125 family) |
+| UEFI | Mu-Silicium, derived from the `miatoll` package |
 
-`miatoll` is Xiaomi's codename for the SM7125 family, so its Mu-Silicium
-platform package is the starting point for this board; the Adreno 610 has a
-worked example on `tb128fu` in the UniXNU device list.
+SM7225 and SM7125 are different chips and an easy pair to confuse. The Redmi
+Note 9 Pro **without** 5G (Xiaomi's `curtana` / `excalibur`) is the SM7125
+Snapdragon 720G with an Adreno 618; `gauguin` is the SM7225 750G with an Adreno
+619, and the two share Little Kernel and platform naming closely enough that
+miatoll's SM7125 platform package is still the starting point for the firmware
+here. Check any inherited constant against this phone before trusting it.
+
+The Adreno 619 has no worked example in the UniXNU device list. The nearest is
+the Adreno 610 on `tb128fu`, which is the same family of driver but a different
+IP, so the GPU path will need checking against this chip rather than assumed.
 
 ## State
 
-Early port, with the firmware running on the device. Adreno 610 renders Metal on
-`tb128fu`, so the GPU path this device needs is known to work on the same IP - that
-is why the port targets UniXNU rather than the earlier ios-sweet tree, which has no
-GPU path at all.
+Early port, with the firmware running on the device. The port targets UniXNU
+rather than the earlier ios-sweet tree because ios-sweet has no GPU path at all,
+and UniXNU does have one for this family of Adreno IP - the 610 on `tb128fu`,
+which is not this chip's 619 but is the closest thing to a reference.
 
 On hardware the Mu-only firmware boots, dispatches the whole DXE batch and reaches
 the UniXNU menu. It stops there: the device tree ABL passes in x0 is not a usable
