@@ -18,9 +18,16 @@ worked example on `tb128fu` in the UniXNU device list.
 
 ## State
 
-Early port. Adreno 610 renders Metal on `tb128fu`, so the GPU path this device
-needs is known to work on the same IP - that is why the port targets UniXNU
-rather than the earlier ios-sweet tree, which has no GPU path at all.
+Early port, with the firmware running on the device. Adreno 610 renders Metal on
+`tb128fu`, so the GPU path this device needs is known to work on the same IP - that
+is why the port targets UniXNU rather than the earlier ios-sweet tree, which has no
+GPU path at all.
+
+On hardware the Mu-only firmware boots, dispatches the whole DXE batch and reaches
+the UniXNU menu. It stops there: the device tree ABL passes in x0 is not a usable
+address, so `ShengBootMemoryDxe` publishes no payload volume, and UniXNU falls back
+to its built-in configuration. See [BRINGUP.md](BRINGUP.md) for the evidence, the
+known-good build, and a list of approaches that look reasonable and are not.
 
 ## Build
 
