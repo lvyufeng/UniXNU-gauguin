@@ -30,10 +30,33 @@ rather than the earlier ios-sweet tree because ios-sweet has no GPU path at all,
 and UniXNU does have one for this family of Adreno IP - the 610 on `tb128fu`,
 which is not this chip's 619 but is the closest thing to a reference.
 
-On hardware the Mu-only firmware boots, dispatches the whole DXE batch and reaches
-the UniXNU menu. It stops there: the device tree ABL passes in x0 is not a usable
-address, so `ShengBootMemoryDxe` publishes no payload volume, and UniXNU falls back
-to its built-in configuration. See [BRINGUP.md](BRINGUP.md) for the evidence, the
+On hardware the Mu-only firmware boots, dispatches the whole DXE batch, and
+`ShengBootMemoryDxe` now finds the payload: the ramdisk rides inside the kernel
+image, the shim hands its address over, and the read-only FAT32 driver mounts it.
+UniXNU draws its menu from `unixnu.toml`, times out, boots the `xnu` entry, and
+DarwinBoot reads the 54 MiB kernel end to end.
+
+Four faults sat between "the menu appears" and "the kernel is in memory", and
+all four looked like the same silent stop:
+
+- `Debug()` at `PcdUniXNUDebugLevel` (0x40) never returned inside UniXNU, so
+  every log line the port expected was dropped. `DEBUG_ERROR` prints normally.
+  Until this was found, every diagnosis was a photograph of a stale frame.
+- `UniXNUConnectAll()` does not come back on this board; it is called when the
+  boot option names the firmware, and the payload is reached without it.
+- `AllocatePool` above roughly 64 KiB hangs, so the drawing code takes large
+  buffers from the page allocator. The logo needs 781 KiB.
+- `AllocatePages` returned `0x35C989000` - fourteen gigabytes, past the end of
+  every described range - and the first write to it hung the boot. Allocations
+  are capped at the top of this phone's RAM now.
+
+The FAT reader had a fifth: it walked the cluster chain from the head of the
+file on every call, which made reading a 54 MiB kernel in 8 MiB pieces quadratic,
+and it stored its cursor without the position that cursor sits at, which
+overshot the chain and returned `EFI_VOLUME_CORRUPTED` at 40 MiB.
+
+What is left is the jump: DarwinBoot parses the Mach-O, maps the segments and
+hands control to XNU. See [BRINGUP.md](BRINGUP.md) for the evidence, the
 known-good build, and a list of approaches that look reasonable and are not.
 
 ## Build
@@ -44,8 +67,8 @@ cd ../UniXNU
 ./unixnu fetch
 ./unixnu build kernel
 ./unixnu build package
-./unixnu build firmware --uefi ../Mu-Silicium
-./unixnu bootimg --uefi ../Mu-Silicium --dtb /path/to/gauguin.dtb
+./unixnu build firmware --uefi ../uefi-gauguin
+./unixnu bootimg --uefi ../uefi-gauguin --dtb /path/to/gauguin.dtb
 ```
 
 No Apple files are in this repository.
