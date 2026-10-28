@@ -1,0 +1,5 @@
+# Host test and private debug artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+auto-debug-runs/
