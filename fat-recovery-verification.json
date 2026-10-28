@@ -1,0 +1,60 @@
+{
+  "twrp_boot_backup": {
+    "path": "../boot_backup.img",
+    "bytes": 134217728,
+    "sha256": "8f488a0a2a766f0a1076a21be0a9f0187b2ee8e598bebd64391236b6d155fb1b"
+  },
+  "baseline_payload": {
+    "path": "../UniXNU/out/gauguin/payload/payload.img",
+    "bytes": 75497472,
+    "sha256": "55c429b920b25057ffe9df615c042fa6886e326b5881d58cc5cf64173e850907"
+  },
+  "fat_source": {
+    "path": "../uefi-gauguin/Platforms/Xiaomi/gauguinPkg/Drivers/ShengBootMemoryDxe/ShengBootMemoryDxe.c",
+    "bytes": 62387,
+    "sha256": "699c4f971afbccac0217a74aaf1f5f5611221dc3fa03ce71adb0ffd02375f9c2",
+    "hash_basis": "Read-only sha256 of the working-tree file when this record was updated. The earlier 62142-byte / 8a974fc7... hash described a previous revision and is superseded."
+  },
+  "artifact_scope": "The paths and hashes that name boot or payload images below are archived artefacts of the run they were produced by, not current build output or current device state. temporary_boot_image (57296a21..., the first restoration run), observation_boot_image (c72f67b9..., the 15-second post-parse stall build) and the auto-debug image 249b581b... are historical. 249b581b... was built while the unvalidated guessed-ramoops write block was disabled by assembly `.if 0`; that block has since been removed from the finalized loader source, so the hash does not describe the source tree as it stands. baseline_payload and payload_files are still the frozen payload used by the regression.",
+  "payload_files": {
+    "kernel_sha256": "6cc5894a917d0a93c117ace3338eda493b1a93cd85132cabda304eb4e00259d3",
+    "adt_sha256": "65d42111e9f45588a6ac244ed66a28da35715072cfff699a07a10567f8768726"
+  },
+  "temporary_boot_image": {
+    "path": "../UniXNU/out/gauguin/boot/boot.img",
+    "bytes": 11214848,
+    "sha256": "57296a2175faca877792517cd593194ad6a1f2b7818be72e0a33c3038edfd912",
+    "build_result": "package, firmware and bootimg commands all exited 0",
+    "embedded_parts_verification": "Unpacked Android image and full gzip stream; byte-for-byte equality with built FD and host-tested payload confirmed; embedded DTB header/length validated",
+    "expanded_bytes": 87620777,
+    "embedded_payload_offset": "0xb00080",
+    "embedded_fd_sha256": "3a232aa4d6f0f047849ac98b2f1d4156ab6089a4ce17b1a2a9b4c4c725a76adf"
+  },
+  "observation_boot_image": {
+    "sha256": "c72f67b98f1b9d0e250c78c1e155d4adb79dc817d8bc3fdea8a574dc8984d37b",
+    "change": "15-second bounded Boot Services Stall after successful ParseKernel, with visible DB13 success message; diagnostic-only, remove before normal boot/performance tests",
+    "payload_verification": "Byte-for-byte unchanged baseline payload embedded; current built firmware byte-for-byte embedded",
+    "hardware_tested": true,
+    "result": "User explicitly observed DB13 parsed Success on the phone after temporary boot (Sending/Booting OKAY, exit 0). This checkpoint occurs only after successful kernel read and ParseKernel; subsequent XNU execution is not established by this image. Historical artefact: see artifact_scope."
+  },
+  "host_regressions": "First validation: 21 tests passed (historical). Published code, independently re-run on the real C: 26 tests (18 FAT + 8 DarwinBoot), 0 skipped, 0 failed. Committed host tooling in the device repository: 129 tests (53 auto-debug + 76 kmsg-ring); the 12 post-MMU-probe and 35 install-probe tests are excluded as uncommitted experimental prototypes. Compiled actual firmware C and DarwinBoot ParseKernel; real payload cluster chains and SHA256 verified.",
+  "host_kernel_parse": {
+    "status": "EFI_SUCCESS",
+    "segments": 15,
+    "base": "0xfffffff003dc8000",
+    "end": "0xfffffff008361000",
+    "entry": "0xfffffff0073ec488"
+  },
+  "hardware_validation": "Complete for the FAT/loader objective at the time of the observation image c72f67b98f1b9d0e: it was transferred and started with exit 0, and the user explicitly observed DB13 parsed Success. That is read + ParseKernel evidence, not XNU execution. TWRP boot restoration was verified by full partition SHA256; a previous temporary run returned to TWRP and boot/recovery hashes remained correct. MMU-on, DWC3 console and userland remain unverified and outside this claim.",
+  "backup_validation": "Full recovery partition SHA256 matches local 128MiB TWRP backup. Uploaded backup hash verified, wrote only verified by-name/boot (/dev/block/sde55), synced; full boot and recovery partition SHA256 both equal 8f488a0a2a766f0a1076a21be0a9f0187b2ee8e598bebd64391236b6d155fb1b after restoration.",
+  "path_note": "Paths are relative to this device repository; they are build/backup locations beside it, not files published with it. Host-private absolute paths are deliberately not recorded.",
+  "published_commits": {
+    "uefi_gauguin": "41b84ac0c392f8c8a5330a0c58c4810efd76afc8 (/main)",
+    "darwinboot": "f87a859fbe4fce140926cd62d8ff6a31ecdaa7bb (/main, gitlink target)",
+    "unixnu": "08d597b7943db70068ecc522fde67f85e6c7139c (gauguin/boot-to-kernel-read)"
+  },
+  "new_boot_image_not_hardware_tested": {
+    "sha256": "1e9180a10825efa70ef9fcb08a170a062a57dbe27fc530dec39541834b47f1a4",
+    "status": "build acceptance only; never booted on the device. 249b581b... remains the hardware-tested baseline. The payload is unchanged (55c429b9...)."
+  }
+}

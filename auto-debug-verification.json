@@ -1,0 +1,19 @@
+{
+  "pre_boot_id": "8aec1d8e-76ec-4ad8-83a9-7976bdb8e605",
+  "recovery_boot_id": "3ca04640-d01a-404b-8981-b399cad8755b",
+  "recovery_boot_verified": true,
+  "collection_verified": true,
+  "transport_verified": true,
+  "partition_hashes_unchanged": true,
+  "phase_verified": false,
+  "boot_command_to_recovery_elapsed": 85.39454037498217,
+  "errors": [],
+  "warnings": [],
+  "image_sha256": "249b581b1732411ad7564e6d0cf78d567f2b18b4463bfc02a24b7334c34d7994",
+  "baseline_payload_sha256": "55c429b920b25057ffe9df615c042fa6886e326b5881d58cc5cf64173e850907",
+  "run_directory": "/tmp/gauguin-verified-auto-debug/20261028T143609.024127Z-0a9deb08c902",
+  "run_directory_note": "Local artefact reference only: the run directory, its raw logs and its collected device files are not uploaded and are not part of this repository. Only the summary fields above are published.",
+  "actual_child_routes_verified": [
+    "deepseek-official/deepseek-v4.1-flash"
+  ]
+}

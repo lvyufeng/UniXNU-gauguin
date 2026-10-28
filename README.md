@@ -30,11 +30,22 @@ rather than the earlier ios-sweet tree because ios-sweet has no GPU path at all,
 and UniXNU does have one for this family of Adreno IP - the 610 on `tb128fu`,
 which is not this chip's 619 but is the closest thing to a reference.
 
-On hardware the Mu-only firmware boots, dispatches the whole DXE batch, and
-`ShengBootMemoryDxe` now finds the payload: the ramdisk rides inside the kernel
-image, the shim hands its address over, and the read-only FAT32 driver mounts it.
-UniXNU draws its menu from `unixnu.toml`, times out, boots the `xnu` entry, and
-DarwinBoot reads the 54 MiB kernel end to end.
+**Where it stands (verified):** the payload volume mounts, the `xnu` entry is
+selected, DarwinBoot reads and parses the 57,110,528-byte kernel with the
+correct 12,468-byte ADT, and the panel shows `DB13 parsed Success`. On a
+temporary boot the panel then shows a blue band at the kernel entry and magenta
+immediately before `SCTLR_EL1`, so XNU code at least executes up to - not past -
+the MMU enable. **Nothing after the MMU is verified**: no stage proves the MMU
+came up, the USB controller or any userland ran. That is the next thing to
+prove, and [BRINGUP.md](BRINGUP.md) is the document that tracks it.
+
+What is evidenced and what is not, with the machine-readable run records, is in
+[AUTOMATION-EVIDENCE.md](AUTOMATION-EVIDENCE.md) and
+[auto-debug-verification.json](auto-debug-verification.json) (host automation)
+and [fat-recovery-verification.json](fat-recovery-verification.json) (payload
+and restoration). Read a green host test as a host test: the host FAT suite
+passes on the real C code, and the offline suite here passes, but neither is
+execution on the phone.
 
 Four faults sat between "the menu appears" and "the kernel is in memory", and
 all four looked like the same silent stop:
@@ -51,13 +62,30 @@ all four looked like the same silent stop:
   are capped at the top of this phone's RAM now.
 
 The FAT reader had a fifth: it walked the cluster chain from the head of the
-file on every call, which made reading a 54 MiB kernel in 8 MiB pieces quadratic,
-and it stored its cursor without the position that cursor sits at, which
-overshot the chain and returned `EFI_VOLUME_CORRUPTED` at 40 MiB.
+file on every call, which made reading the kernel in pieces quadratic, and it
+stored its cursor without the position that cursor sits at, which overshot the
+chain and returned `EFI_VOLUME_CORRUPTED` at 40 MiB.
 
-What is left is the jump: DarwinBoot parses the Mach-O, maps the segments and
-hands control to XNU. See [BRINGUP.md](BRINGUP.md) for the evidence, the
-known-good build, and a list of approaches that look reasonable and are not.
+A sixth was in long-name handling, and it was silent rather than noisy: the old
+algorithm decoded both `kernel.macho.adt` and `kernel.macho` to the name
+`kernel.macho`, so a request for the kernel opened `kernel.macho.adt` instead.
+Name assembly now takes UTF-16 code
+units from slots 1..10, 14..25 and 28..31 of each 32-byte record, treats byte 26
+as reserved (not as a character), and handles multi-segment names, the ordinal
+and checksum that span segments, and the `0x00` terminator. The host
+regression compiles the actual C and covers the real payload's cluster chains.
+Its first validation passed 21 tests (historical); the published code was
+independently re-run at **26 tests (18 FAT + 8 DarwinBoot), 0 skipped, 0
+failed**. See [FAT-RECOVERY-VALIDATION.md](FAT-RECOVERY-VALIDATION.md).
+
+The kernel-entry handoff is now evidenced. What remains is proof of progress
+through and after MMU enable. See [BRINGUP.md](BRINGUP.md) for the evidence,
+the known-good build, and the unverified experiments.
+
+For this bring-up branch use [lvyufeng/UniXNU](https://github.com/lvyufeng/UniXNU/tree/gauguin/boot-to-kernel-read)
+and [lvyufeng/uefi-gauguin](https://github.com/lvyufeng/uefi-gauguin).
+The DarwinBoot gitlink in UniXNU points at [lvyufeng/DarwinBoot](https://github.com/lvyufeng/DarwinBoot);
+these are fork-local diagnostics and fixes, not claimed upstream support.
 
 ## Build
 
@@ -70,5 +98,17 @@ cd ../UniXNU
 ./unixnu build firmware --uefi ../uefi-gauguin
 ./unixnu bootimg --uefi ../uefi-gauguin --dtb /path/to/gauguin.dtb
 ```
+
+**This particular command list omits payload packaging.** UniXNU does provide
+`./unixnu build payload`, but `build kernel` does not automatically run it:
+it updates standalone kernel/ADT artifacts, not the FAT image. `bootimg` uses
+an existing `out/gauguin/payload/payload.img` by default; a fresh build without
+that file must explicitly package a payload before testing XNU.
+
+For the current regression, keep the tested payload frozen at
+`55c429b920b25057ffe9df615c042fa6886e326b5881d58cc5cf64173e850907` (72 MiB,
+kernel `6cc5894a...59d3`, ADT `65d42111...726`). A new kernel needs an explicit
+payload build, content/hash verification, and a new boot image; do not mix its
+standalone manifest with this restored baseline.
 
 No Apple files are in this repository.
