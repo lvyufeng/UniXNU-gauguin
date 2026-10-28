@@ -55,6 +55,6 @@
   },
   "new_boot_image_not_hardware_tested": {
     "sha256": "1e9180a10825efa70ef9fcb08a170a062a57dbe27fc530dec39541834b47f1a4",
-    "status": "build acceptance only; never booted on the device. 249b581b... remains the hardware-tested baseline. The payload is unchanged (55c429b9...)."
+    "status": "Build acceptance only; never booted on the device. 249b581b... is the safe baseline used for this hardened closed-loop hardware acceptance and is retained; 57296a21... (first restoration run) and c72f67b9... (DB13 parsed Success observed) were also hardware-tested earlier. The payload is unchanged (55c429b9...)."
   }
 }

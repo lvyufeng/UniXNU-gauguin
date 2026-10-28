@@ -22,7 +22,7 @@
 
 - boot 与 recovery 均为 134217728 字节，完整 SHA256 一致：`8f488a0a2a766f0a1076a21be0a9f0187b2ee8e598bebd64391236b6d155fb1b`，与本地 `../boot_backup.img` 一致（`recovery` 分区完整哈希也单独核对过）。
 - 新固件始终以临时 `fastboot boot` 方式试验，未再次永久刷写 boot；boot 保持 TWRP 回退路径。boot 曾因早期一次误写受损，随后已恢复并完整核验（boot 与 recovery 均等于上文 128 MiB 备份哈希）。
-- 历史临时试验镜像 SHA256 `249b581b1732411ad7564e6d0cf78d567f2b18b4463bfc02a24b7334c34d7994`：构建时用汇编 `.if 0` 禁用历史上向猜测 ramoops 地址写记录的代码。该 `.if 0` 已从源码删除并落地提交，所以它描述的是那个镜像的构建方式，不是当前源码状态。它仍是**唯一经过真机实测**的基线镜像。
+- 历史临时试验镜像 SHA256 `249b581b1732411ad7564e6d0cf78d567f2b18b4463bfc02a24b7334c34d7994`：构建时用汇编 `.if 0` 禁用历史上向猜测 ramoops 地址写记录的代码。该 `.if 0` 已从源码删除并落地提交，所以它描述的是那个镜像的构建方式，不是当前源码状态。它是**本次加固闭环真机验收所用的安全基线**；更早的 `c72f67b9…` 镜像曾在真机实测并观察到 `DB13 parsed Success`，`57296a21…` 也经历过真机启动，三者都属已实测的历史。
 - 新构建镜像 SHA256 `1e9180a10825efa70ef9fcb08a170a062a57dbe27fc530dec39541834b47f1a4`：**仅通过构建验收，未在真机启动**。payload 未变（`55c429b9…907`）。
 - 主机闭环实测：`scripts/auto-debug.py` 默认 dry-run、不写设备、不刷写；加固后一次 `--run` 结果目录 `/tmp/gauguin-verified-auto-debug/20261028T143609.024127Z-0a9deb08c902`，pre boot ID `8aec1d8e-76ec-4ad8-83a9-7976bdb8e605`，恢复 boot ID `3ca04640-d01a-404b-8981-b399cad8755b`，`recovery_boot_verified` / `collection_verified` / `transport_verified` / `partition_hashes_unchanged` 均为 true，`phase_verified=false`，errors 为空，boot 命令完成到确认新 TWRP 85.3945 秒。该时长只说明运输与恢复，不证明任何固件阶段。
 - 本轮离线回归：仓库 `python3 -m unittest discover -s tests` 运行 136 项、含 27 个子测试，全部通过。这是主机事实，且父代理会再次复核，不据此声称任何未来或真机结果。

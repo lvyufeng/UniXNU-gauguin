@@ -34,8 +34,9 @@ which is not this chip's 619 but is the closest thing to a reference.
 selected, DarwinBoot reads and parses the 57,110,528-byte kernel with the
 correct 12,468-byte ADT, and the panel shows `DB13 parsed Success`. On a
 temporary boot the panel then shows a blue band at the kernel entry and magenta
-immediately before `SCTLR_EL1`, so XNU code at least executes up to - not past -
-the MMU enable. **Nothing after the MMU is verified**: no stage proves the MMU
+immediately before `SCTLR_EL1`: the boot **reached the pre-MMU probe**, and
+whether it continued beyond the enable remains unverified. **Nothing after the
+MMU is verified**: no stage proves the MMU
 came up, the USB controller or any userland ran. That is the next thing to
 prove, and [BRINGUP.md](BRINGUP.md) is the document that tracks it.
 
